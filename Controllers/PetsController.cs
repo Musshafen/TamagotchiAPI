@@ -157,7 +157,29 @@ namespace TamagotchiAPI.Controllers
             return Ok(playtime);
         }
 
-        
+        [HttpPost("{id}/Feedings")]
+        public async Task<ActionResult<Feeding>> CreateFeedingForPet(int id)
+        {
+
+            var pet = await _context.Pets.FindAsync(id);
+
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            pet.HappinessLevel = pet.HappinessLevel + 3;
+            pet.HungerLevel = pet.HungerLevel - 5;
+            var feeding = new Feeding();
+            feeding.PetId = pet.Id;
+            feeding.When = DateTime.Now.ToUniversalTime();
+
+            _context.Feedings.Add(feeding);
+            await _context.SaveChangesAsync();
+
+
+            return Ok(feeding);
+        }
 
         // DELETE: api/Pets/5
         //
