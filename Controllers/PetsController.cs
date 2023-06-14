@@ -133,6 +133,30 @@ namespace TamagotchiAPI.Controllers
             return CreatedAtAction("GetPet", new { id = pet.Id }, pet);
         }
 
+        [HttpPost("{id}/Playtimes")]
+        public async Task<ActionResult<Playtime>> CreatePlaytimeForPet(int id)
+        {
+
+            var pet = await _context.Pets.FindAsync(id);
+
+            if (pet == null)
+            {
+                return NotFound();
+            }
+
+            pet.HappinessLevel = pet.HappinessLevel + 5;
+            pet.HungerLevel = pet.HungerLevel + 3;
+            var playtime = new Playtime();
+            playtime.PetId = pet.Id;
+            playtime.When = DateTime.Now.ToUniversalTime();
+
+            _context.Playtimes.Add(playtime);
+            await _context.SaveChangesAsync();
+
+
+            return Ok(playtime);
+        }
+
         // DELETE: api/Pets/5
         //
         // Deletes an individual pet with the requested id. The id is specified in the URL
